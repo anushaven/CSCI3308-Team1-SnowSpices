@@ -30,47 +30,54 @@ describe('Server!', () => {
   //1. Positive test case
   //We are checking POST /register API by passing the user info in the correct order. This test case should pass and return a status 200 along with a "Success" message.
 //positive cases
-it('positive: /login', (done) => {
+//NOT FINISHED
+it('positive : /login', done => {
   chai
     .request(server)
     .post('/login')
-    .send({ username: 'icespice', password: 'munch' })
+    .send({ username: 'icsp', name: 'Ice Spice', email: 'icsp@colorado.edu', password: 'munch'})
     .end((err, res) => {
-      if (err) {
-        console.error(err); // Log any errors
-      }
       expect(res).to.have.status(200);
-      expect(res.body.status).to.equals('error');
-      expect(res.body.message).to.equals('User login successful');
+      expect(res.body.message).to.equals('User login successful.');
       done();
     });
 });
-
 
 // 2. Negative test case
 //We are checking POST /add_user API by passing the user info in in incorrect manner (name cannot be an integer). This test case should pass and return a status 200 along with a "Invalid input" message.
-it('Negative: /login. Checking invalid username or password', (done) => {
+//NOT FINISHED
+it('Negative : /login. Checking invalid username or password.', done => {
   chai
     .request(server)
     .post('/login')
-    .send({ username: 'invalidUser', password: 'wrongPassword' })
+    .send({ username: '', name: '', email: 'email@email.com', password: ''})
     .end((err, res) => {
       expect(res).to.have.status(200);
-      expect(res.body.status).to.equals('error');
-      expect(res.body.message).to.equals('Incorrect username or password');
+      expect(res.body.message).to.equals('Incorrect username or password.');
       done();
     });
 });
 
-it('Negative: /login. Checking missing username or password', (done) => {
+it('positive : /register', done => {
   chai
     .request(server)
-    .post('/login')
-    .send({ username: '', password: '' })
+    .post('/register')
+    .send({ski_or_board: 'ski', username: 'user50', mtn_name: 'Copper',  name: 'user', skill_level: '3',  email: 'email@email.com', password: 'default'})
     .end((err, res) => {
       expect(res).to.have.status(200);
-      expect(res.body.status).to.equals('error');
-      expect(res.body.message).to.equals('Incorrect username or password');
+      expect(res.body.message).to.equals('Registration successful.');
+      done();
+    });
+});
+
+it('Negative : /register. Checking invalid username or password.', done => {
+  chai
+    .request(server)
+    .post('/register')
+    .send({ username: '', name: '', email: 'email@email.com', password: ''})
+    .end((err, res) => {
+      expect(res).to.have.status(200);
+      expect(res.body.message).to.equals('Invalid registration.');
       done();
     });
 });
