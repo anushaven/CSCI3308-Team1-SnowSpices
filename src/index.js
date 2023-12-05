@@ -7,7 +7,7 @@ const app = express();
 const pgp = require('pg-promise')(); // To connect to the Postgres DB from the node server
 const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
-const bcrypt = require('bcrypt'); //  To hash passwords
+const bcrypt = require('bcryptjs'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part B.
 
 // *****************************************************
@@ -41,6 +41,11 @@ db.connect()
 
 app.set('view engine', 'ejs'); // set the view engine to EJS
 app.use(bodyParser.json()); // specify the usage of JSON for parsing request body.
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 // initialize session variables
 app.use(
@@ -72,13 +77,11 @@ app.get('/welcome', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
 });
 
-// TODO - Include your API routes here
 app.get("/home", (req, res) => {
     res.redirect("/login"); //this will call the /anotherRoute route in the API
   });
 
-app.get("/login", (req, res) => {
-  //do something
+app.get("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
@@ -101,23 +104,30 @@ app.get("/profile", (req, res) => {
 
 // Register API
 app.post("/register", async (req, res) => {
-
   try {
-    //hash the password using bcrypt library
+    // Check if both username and password are provided
+    if (!req.body.username || !req.body.password || !req.body.name || !req.body.email) {
+      return res.status(200).json({ message: 'Invalid registration.' });
+    }
+
+    // Hash the password using bcrypt library
     const hash = await bcrypt.hash(req.body.password, 10);
 
-    // To-DO: Insert username and hashed password into the 'users' table
+    // Insert username, hashed password, name, and email into the 'students' table
     await db.none(
-      "INSERT INTO students(name, password) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING",
-      [req.body.name, hash]
+      "INSERT INTO students(username, password, name, email) VALUES ($1, $2, $3, $4) ON CONFLICT (username) DO NOTHING",
+      [req.body.username, hash, req.body.name, req.body.email]
     );
-    console.log('fetched response');
-    res.redirect("/login");
+
+    console.log('Registration successful.');
+    res.status(200).json({ message: 'Registration successful.' });
   } catch (error) {
-    console.log('error: ', error);
-    res.redirect("/register");
+    console.error('Error: ', error);
+    res.status(200).json({ message: 'Invalid registration.' });
   }
 });
+
+
 
 
 // Login API
@@ -152,11 +162,11 @@ app.post("/login", async (req, res) => {
     // });
 
 
-    if (user_match.length === 0) {
-      // User not found, return an error response
+    if (student_match.length === 0) {
+      // Student not found, return an error response
       res.status(200).json({ status: 'error', message: 'Incorrect username or password' });
     } else {
-      const match_pass = await bcrypt.compare(req.body.password, user_match[0].password);
+      const match_pass = await bcrypt.compare(req.body.password, student_match[0].password);
 
       if (!match_pass) {
         // Incorrect password, return an error response
@@ -196,9 +206,6 @@ const auth = (req, res, next) => {
 
 // Authentication Required
 app.use(auth);
-
-
-
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
