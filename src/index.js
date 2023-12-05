@@ -57,6 +57,13 @@ app.use(
   })
 );
 
+const user = {
+  username: undefined,
+  name: undefined,
+  email: undefined,
+};
+
+
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************
@@ -79,7 +86,17 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("pages/register")
+  res.render("pages/register");
+});
+
+// Need to add tags, some sort of link between user and tags to know
+// which are selected?
+app.get("/profile", (req, res) => {
+  res.render("pages/profile", {
+    username: req.session.user.username,
+    name: req.session.students.name,
+    email: req.session.students.email,
+  });
 });
 
 // Register API
@@ -109,6 +126,31 @@ app.post("/login", async (req, res) => {
     // Check if the password from the request matches with the password in the DB
     const user_query = 'SELECT * FROM users WHERE username = $1';
     const user_match = await db.any(user_query, [req.body.username]);
+
+    // const username = req.body.username;
+    // const values = [username];
+
+    // This NEEDS to either have students and users linked to be functional.
+
+    // const student_query = 'SELECT * FROM students WHERE username = $1';
+
+
+    // db.one(user_query, values)
+    // .then((data) => {
+    //   user.username = username;
+    //   user.name = data.name;
+    //   user.email = data.email;
+
+    //   req.session.user = user;
+    //   req.session.save();
+
+    //   res.redirect("pages/profile");
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   res.redirect("/login");
+    // });
+
 
     if (user_match.length === 0) {
       // User not found, return an error response

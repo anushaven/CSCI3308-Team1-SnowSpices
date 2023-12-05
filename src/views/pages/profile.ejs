@@ -178,31 +178,41 @@
 
                 <div class="w3-container">
                   <p>Skill Level</p>
-                    <% if(tags.level === 1){ %>
+
+                  <!-- Uncomment when tags are fixed and 
+                    included in app.get(/profile) -->
+
+
+                    <!-- <% if(tags.level == 1){ %>
                       <div class="w3-light-grey">
                         <div class="w3-container w3-green w3-center" style="width:25%">1</div>
                       </div>
-                    <% } %>
-
-                    <% if(tags.level === 2){ %>
+                    <% } else if (tags.level == 2){ %>
                       <div class="w3-light-grey">
                         <div class="w3-container w3-blue w3-center" style="width:50%">2</div>
                       </div>
-                    <% } %>
-
-                    <% if(tags.level === 3){ %>
+                    <% } else if (tags.level == 3){ %>
                       <div class="w3-light-grey">
                         <div class="w3-container w3-black w3-center" style="width:75%">3</div>
                       </div>
-                    <% } %>
-                   
-                    <% if(tags.level === 4){ %>
+                    <% } else if (tags.level == 4){ %>
                       <div class="bordered">
                         <div class="w3-light-grey">
                             <div class="w3-container w3-green w3-center" style="width:25%">1</div>
                         </div>
                     </div>
-                    <% } %>
+                    <% } else {%>
+                        <div class="w3-light-grey">
+                            <div class="w3-container w3-center">*_*</div>
+                        </div>
+                    <% } %> -->
+                    
+                    <div class="bordered">
+                      <div class="w3-light-grey">
+                          <div class="w3-container w3-green w3-center" style="width:25%">1</div>
+                      </div>
+                  </div>
+
                 </div>
 
                 <div class="col-md-9">

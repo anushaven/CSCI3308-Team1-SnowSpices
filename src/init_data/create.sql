@@ -1,8 +1,3 @@
-CREATE TABLE students(
-    name VARCHAR(50) NOT NULL,
-    email VARCHAR(200) NOT NULL
-);
-
 CREATE TABLE mountains(
     resort_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -21,5 +16,7 @@ CREATE TABLE tags(
 
 CREATE TABLE users(
     username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(60) NOT NULL
+    password VARCHAR(60) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(200) NOT NULL
 );
