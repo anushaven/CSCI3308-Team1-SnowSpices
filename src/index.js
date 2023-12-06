@@ -127,11 +127,11 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     // Check if the username exists in the students table
-    const student_query = 'SELECT * FROM students WHERE username = $1';
+    const student_query = 'SELECT * FROM students WHERE username = $1;';
     const student_match = await db.any(student_query, [req.body.username]);
     var pass = '';
 
-    const tag_query = 'SELECT * FROM tags WHERE username = $1';
+    const tag_query = 'SELECT * FROM tags WHERE username = $1;';
     const values = [req.body.username];
     db.one(student_query, values)
     .then((data) => {

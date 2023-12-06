@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS students CASCADE;
 CREATE TABLE students(
     username VARCHAR(50) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
