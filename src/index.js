@@ -57,7 +57,14 @@ app.use(
 );
 app.use(express.static('resources'));
 
-
+const user = {
+  username: undefined,
+  name: undefined,
+  email: undefined,
+  mountain: undefined,
+  skill_level:undefined,
+  ski_or_board: undefined,
+};
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
@@ -82,16 +89,6 @@ app.get("/register", (req, res) => {
   res.render("pages/register")
 });
 
-app.get("/profile", (req, res) => {
-  res.render("pages/profile", {
-    username: req.body.students.username,
-    name: req.body.students.name,
-    email: req.body.students.email,
-    mountain: req.body.tags.mtn_name,
-    skill_level: req.body.tags.skill_level,
-    ski_or_board: req.session.tags.ski_or_board,
-  });
-});
 
 // Register API
 app.post("/register", async (req, res) => {
@@ -123,15 +120,66 @@ app.post("/register", async (req, res) => {
   } catch (error) {
     console.log('error: ', error);
     res.redirect("pages/login");
+    res.redirect("pages/login");
   }
 });
 
 app.post("/login", async (req, res) => {
   try {
+    const tag_query = 'SELECT * FROM tags WHERE username = $1;';
+    const username = req.body.username;
+    const values = [username];
+    db.one(student_query, values)
+    .then((data) => {
+      user.username = req.session.user.username;
+      user.name = data.name;
+      user.email = data.email;
+    })
+    .catch((err) => {
+      console.log(err);
+      res.redirect("/login");
+    });
+
+    db.one(tag_query, values)
+    .then((data) => {
+      user.ski_or_board = data.ski_or_board;
+      user.mtn_name = data.mtn_name;
+      user.skill_level = data.skill_level;
+    })
+    .catch((err) => {
+      console.log(err);
+      res.redirect("/login");
+    });
+    
     // Check if the username exists in the students table
-    const student_query = 'SELECT * FROM students WHERE username = $1';
+    const student_query = 'SELECT * FROM students WHERE username = $1;';
     const student_match = await db.any(student_query, [req.body.username]);
     var pass = '';
+
+    // const tag_query = 'SELECT * FROM tags WHERE username = $1;';
+    // const username = req.body.username;
+    // const values = [username];
+    // db.one(student_query, values)
+    // .then((data) => {
+    //   user.username = username;
+    //   user.name = data.name;
+    //   user.email = data.email;
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   res.redirect("/login");
+    // });
+
+    // db.one(tag_query, values)
+    // .then((data) => {
+    //   user.ski_or_board = data.ski_or_board;
+    //   user.mtn_name = data.mtn_name;
+    //   user.skill_level = data.skill_level;
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   res.redirect("/login");
+    // });
 
     if (student_match.length === 0) {
       // Student not found, return an error response
@@ -181,6 +229,17 @@ const auth = (req, res, next) => {
   next();
 };
 app.use(auth);
+
+app.get("/profile", (req, res) => {
+  res.render("pages/profile", {
+    username: req.session.user.username,
+    name: req.session.user.name,
+    email: req.session.user.email,
+    mountain: req.session.user.mountain,
+    skill_level: req.session.user.skill_level,
+    ski_or_board: req.session.user.ski_or_board,
+  });
+});
 
 
 // About API
